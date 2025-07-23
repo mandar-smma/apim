@@ -1,5 +1,3 @@
-parameters:
-
 variables:
  # Location where resources, including resource group, will be deployed
   - name: "location"
@@ -62,4 +60,4 @@ stages:
                   csmParametersFile: "infra/parameters-env-${{variables.environmentName}}.bicepparam"
                   overrideParameters: "-environmentName $(environmentName) \
                                        -deploymentLocation \"${{variables.location}}\" \
-                                       -azureResourceManagerServiceConnectionAppId \"$(AppIdFromServicePrincipal.azureResourceManagerServiceConnectionAppId)\" \
+                                       -azureResourceManagerServiceConnectionAppId \"$(AppIdFromServicePrincipal.azureResourceManagerServiceConnectionAppId)\""
