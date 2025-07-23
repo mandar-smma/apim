@@ -1,0 +1,75 @@
+parameters:
+
+variables:
+ # Location where resources, including resource group, will be deployed
+  - name: "location"
+    value: "francecentral"
+  - name: "shortLocation"
+    value: "frc"
+  
+  - name: 'resourceGroupName'
+    value: "RD-infraIT-${{variables.shortLocation}}-rg"
+
+  # Branch used by this pipeline run
+  - name: GitBranch
+    value: $(Build.SourceBranchName)
+  - name: environmentName
+    value: "dev"
+
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  # Deploy Azure ARM resources
+  - stage: AzureARMDeployment
+    displayName: "Deploy Azure resources to resource group"
+    jobs:
+      - deployment: DeployAzureARM
+        displayName: "Deploy ARM resources to resource group"
+        environment: ${{variables.environmentName}}
+        strategy:
+          # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/deployment-jobs?view=azure-devops#runonce-deployment-strategy
+          runOnce:
+            deploy:
+              steps:
+                # Get application id of deployment service principal
+              - task: AzurePowerShell@5
+                name: AppIdFromServicePrincipal
+                displayName: "Retrieve application id of service connection"
+                inputs:
+                  azureSubscription: "$(azureResourceManagerConnectionName)"
+                  ScriptType: 'InlineScript'
+                  Inline: |
+                    $appId = (Get-AzADServicePrincipal -ObjectId $(azureResourceManagerServiceConnectionPrincipalId)).AppId
+                    Write-Host "AppId: $appId"
+                    Write-Host "##vso[task.setvariable variable=azureResourceManagerServiceConnectionAppId;isoutput=true;]$appId"
+                  azurePowerShellVersion: 'LatestVersion'
+
+              # Checkout code from repository
+              - checkout: self
+
+              # Create APIM service
+              - task: AzureResourceManagerTemplateDeployment@3
+                displayName: "Apply ARM template to ${{variables.resourceGroupName}}"
+                inputs:
+                  deploymentScope: "Resource Group"
+                  azureResourceManagerConnection: "$(azureResourceManagerConnectionName)"
+                  subscriptionId: "${{variables.subscriptionId}}"
+                  resourceGroupName: "${{variables.resourceGroupName}}"
+                  location: "${{variables.location}}"
+                  templateLocation: "Linked artifact"
+                  csmFile: "infra/azure-deploy.bicep"
+                  csmParametersFile: "infra/parameters-${{variables.environmentName}}.biceparam"
+                  overrideParameters: "-environmentName $(environmentName) \
+                                       -deploymentLocation \"${{variables.location}}\" \
+                                       -azureResourceManagerServiceConnectionAppId \"$(AppIdFromServicePrincipal.azureResourceManagerServiceConnectionAppId)\" \
