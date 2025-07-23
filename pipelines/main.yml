@@ -16,16 +16,6 @@ variables:
   - name: environmentName
     value: "dev"
 
-trigger:
-  branches:
-    include:
-      - main
-
-pr:
-  branches:
-    include:
-      - main
-
 pool:
   vmImage: ubuntu-latest
 
@@ -69,7 +59,7 @@ stages:
                   location: "${{variables.location}}"
                   templateLocation: "Linked artifact"
                   csmFile: "infra/azure-deploy.bicep"
-                  csmParametersFile: "infra/parameters-${{variables.environmentName}}.biceparam"
+                  csmParametersFile: "infra/parameters-env-${{variables.environmentName}}.bicepparam"
                   overrideParameters: "-environmentName $(environmentName) \
                                        -deploymentLocation \"${{variables.location}}\" \
                                        -azureResourceManagerServiceConnectionAppId \"$(AppIdFromServicePrincipal.azureResourceManagerServiceConnectionAppId)\" \
