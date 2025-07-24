@@ -1,15 +1,18 @@
 name: Deploy Azure Resources with PowerShell
 
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'dev'
+
 env:
   AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}  # JSON from `az ad sp create-for-rbac --sdk-auth`
   LOCATION: 'francecentral'  # Change as needed
   SHORT_LOCATION: 'frc'  # Change as needed
   RESOURCE_GROUP_NAME: 'RD-infraIT-${{ env.SHORT_LOCATION }}-rg
-
-on:
-  push:
-    branches:
-      - main
 
 jobs:
   deploy:
