@@ -50,4 +50,4 @@ stages:
                   csmParametersFile: "infra/parameters-env-${{variables.environmentName}}.bicepparam"
                   overrideParameters: "-environmentName $(environmentName) \
                                        -deploymentLocation \"${{variables.location}}\" \
-                                       -azureResourceManagerServiceConnectionAppId ${{variables.ServiceConnectionAppId}"
+                                       -azureResourceManagerServiceConnectionAppId \"${{variables.ServiceConnectionAppId}}\""
