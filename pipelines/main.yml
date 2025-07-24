@@ -13,6 +13,8 @@ variables:
     value: $(Build.SourceBranchName)
   - name: environmentName
     value: "dev"
+  - name: ServiceConnectionAppId
+    value: "9599a915-4c7e-41a6-a01a-20607495f3b5"
 
 pool:
   vmImage: ubuntu-latest
@@ -30,18 +32,6 @@ stages:
           runOnce:
             deploy:
               steps:
-                # Get application id of deployment service principal
-              - task: AzurePowerShell@5
-                name: AppIdFromServicePrincipal
-                displayName: "Retrieve application id of service connection"
-                inputs:
-                  azureSubscription: "$(azureResourceManagerConnectionName)"
-                  ScriptType: 'InlineScript'
-                  Inline: |
-                    $appId = (Get-AzADServicePrincipal -ObjectId $(azureResourceManagerServiceConnectionPrincipalId)).AppId
-                    Write-Host "AppId: $appId"
-                    Write-Host "##vso[task.setvariable variable=azureResourceManagerServiceConnectionAppId;isoutput=true;]$appId"
-                  azurePowerShellVersion: 'LatestVersion'
 
               # Checkout code from repository
               - checkout: self
@@ -51,7 +41,7 @@ stages:
                 displayName: "Apply ARM template to ${{variables.resourceGroupName}}"
                 inputs:
                   deploymentScope: "Resource Group"
-                  azureResourceManagerConnection: "$(azureResourceManagerConnectionName)"
+                  azureResourceManagerConnection: ${{variables.azureResourceManagerConnectionName}}
                   subscriptionId: "${{variables.subscriptionId}}"
                   resourceGroupName: "${{variables.resourceGroupName}}"
                   location: "${{variables.location}}"
@@ -60,4 +50,4 @@ stages:
                   csmParametersFile: "infra/parameters-env-${{variables.environmentName}}.bicepparam"
                   overrideParameters: "-environmentName $(environmentName) \
                                        -deploymentLocation \"${{variables.location}}\" \
-                                       -azureResourceManagerServiceConnectionAppId \"$(AppIdFromServicePrincipal.azureResourceManagerServiceConnectionAppId)\""
+                                       -azureResourceManagerServiceConnectionAppId ${{variables.ServiceConnectionAppId}"
