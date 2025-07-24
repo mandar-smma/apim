@@ -8,17 +8,17 @@ on:
         required: true
         default: 'dev'
 
-env:
-  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}  # JSON from `az ad sp create-for-rbac --sdk-auth`
-  LOCATION: 'francecentral'  # Change as needed
-  SHORT_LOCATION: 'frc'  # Change as needed
-  RESOURCE_GROUP_NAME: 'RD-infraIT-${{ env.SHORT_LOCATION }}-rg
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
+  env:
+    AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}  # JSON from `az ad sp create-for-rbac --sdk-auth`
+    LOCATION: 'francecentral'  # Change as needed
+    SHORT_LOCATION: 'frc'  # Change as needed
+    RESOURCE_GROUP_NAME: 'RD-infraIT-${{ env.SHORT_LOCATION }}-rg
+    SUBSCRIPTION_ID: 'Az-Subscription1-Mandar'  # Replace with your subscription ID
 
-    steps:
+  steps:
       # ✅ Checkout your code
       - name: Checkout repository
         uses: actions/checkout@v3
