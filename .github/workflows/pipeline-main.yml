@@ -34,9 +34,10 @@ jobs:
             $creds = $env:AZURE_CREDENTIALS | ConvertFrom-Json			
             $tenantId = $creds.tenantId 
             $appId =  $creds.clientId  # Also known as Client ID
+
             $secret = $creds.clientSecret
-            $credential = New-Object System.Management.Automation.PSCredential ($appId, $secret)
-            
+            $secureSecret = ConvertTo-SecureString $secret -AsPlainText -Force
+            $credential = New-Object System.Management.Automation.PSCredential ($appId, $secureSecret)
             Connect-AzAccount -ServicePrincipal -Tenant $tenantId -Credential $credential
 
             # "Start deploy to Azure"
