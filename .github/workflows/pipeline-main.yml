@@ -5,15 +5,34 @@ on:
 
 env:
   AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-  LOCATION: 'francecentral'
+  LOCATION: 'francecentral' 
+  SHORT_LOCATION: 'frc'
   SUBSCRIPTION_ID: 'Az-Subscription1-Mandar'
+  BICEP_FILE: './infra/main.bicep'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      SHORT_LOCATION: 'frc'
-      RESOURCE_GROUP_NAME: 'RD-infraIT-${{ env.SHORT_LOCATION }}-rg'
+      
     steps:
       - name: Checkout repository   # Checkout your code
         uses: actions/checkout@v3
+              
+      - name: Install Azure PowerShell # 🛠️ Install Azure PowerShell
+        run: |
+          pwsh -Command "Install-Module -Name Az -Force -Scope CurrentUser -AllowClobber"
+      - name: Deploy
+        uses: azure/powershell@v1
+        with:
+          inlineScript: | 
+            Write-Host "Logging in to Azure..."
+            Connect-AzAccount -Identity
+            $resourceGroupName = 'PO-Apim-${{ env.SHORT_LOCATION }}-rg'
+
+            Write-Host "Setting subscription context..."
+            Set-AzContext -SubscriptionId ${{ env.SUBSCRIPTION_ID }}
+
+            Write-Host "Creating resource group if it doesn't exist..."
+            if (-not (Get-AzResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue)) {
+              New-AzResourceGroup -Name $resourceGroupName -Location ${{ env.LOCATION }}
+            }
