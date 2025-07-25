@@ -1,48 +1,11 @@
 name: Deploy Azure Resources with PowerShell
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Target environment'
-        required: true
-        default: 'dev'
+  workflow_dispatch
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-  env:
-    AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}  # JSON from `az ad sp create-for-rbac --sdk-auth`
-    LOCATION: 'francecentral'  # Change as needed
-    SHORT_LOCATION: 'frc'  # Change as needed
-    RESOURCE_GROUP_NAME: 'RD-infraIT-${{ env.SHORT_LOCATION }}-rg
-    SUBSCRIPTION_ID: 'Az-Subscription1-Mandar'  # Replace with your subscription ID
-
-  steps:
-      # ✅ Checkout your code
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # 🔐 Login to Azure using service principal credentials
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}  # JSON from `az ad sp create-for-rbac --sdk-auth`
-
-      # 🛠️ Install Azure PowerShell
-      - name: Install Azure PowerShell
-        run: |
-          pwsh -Command "Install-Module -Name Az -Force -Scope CurrentUser -AllowClobber"
-
-      # 📦 Deploy first Bicep file
-      - name: Deploy storage.bicep
-        run: |
-          pwsh -Command "
-            Connect-AzAccount -Identity;
-            New-AzResourceGroupDeployment `
-              -ResourceGroupName $env:RESOURCE_GROUP_NAME `
-              -TemplateFile './infra/azure-deploy.bicep' `
-              -TemplateParameterFile './infra/parameters-env-dev.bicepparam' `
-              -location $env:LOCATION `
-              -environmentName 'dev' `
-          "
+env:
+  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+  LOCATION: 'francecentral' 
+  SHORT_LOCATION: 'frc'
+  RESOURCE_GROUP_NAME: 'RD-infraIT-${{ env.SHORT_LOCATION }}-rg
+  SUBSCRIPTION_ID: 'Az-Subscription1-Mandar'
