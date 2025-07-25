@@ -31,19 +31,20 @@ jobs:
           inlineScript: |
             # Authenticate to Azure
             Write-Host "Authenticating with Azure..."
+            $creds = $env:AZURE_CREDENTIALS | ConvertFrom-Json
             Connect-AzAccount `
             -ServicePrincipal `
-            -Tenant ${{ env.AZURE_CREDENTIALS.tenantId }} `
-            -ApplicationId  ${{ env.AZURE_CREDENTIALS.clientId }} `
-            -Credential (New-Object System.Management.Automation.PSCredential(${{ env.AZURE_CREDENTIALS.clientId }}, (ConvertTo-SecureString ${{ env.AZURE_CREDENTIALS.clientSecret }} -AsPlainText -Force))) `
-            -Subscription ${{ env.AZURE_CREDENTIALS.subscriptionId }}
+            -Tenant $creds.tenantId `
+            -ApplicationId $creds.clientId `
+            -Credential (New-Object System.Management.Automation.PSCredential($creds.clientId, (ConvertTo-SecureString $creds.clientSecret -AsPlainText -Force))) `
+            -Subscription $creds.subscriptionId 
 
             # "Start deploy to Azure"
              Write-Host " Deploy to Azure..."
             $resourceGroupName = 'PO-Apim-${{ env.SHORT_LOCATION }}-rg'
 
             Write-Host "Setting subscription context..."
-            Set-AzContext -SubscriptionId ${{ env.SUBSCRIPTION_ID }}
+            Set-AzContext -SubscriptionId $creds.subscriptionId
 
             Write-Host "Creating resource group if it doesn't exist..."
             if (-not (Get-AzResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue)) {
