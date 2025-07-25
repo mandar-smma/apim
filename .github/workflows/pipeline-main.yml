@@ -9,3 +9,7 @@ env:
   SHORT_LOCATION: 'frc'
   RESOURCE_GROUP_NAME: 'RD-infraIT-${{ env.SHORT_LOCATION }}-rg
   SUBSCRIPTION_ID: 'Az-Subscription1-Mandar'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
