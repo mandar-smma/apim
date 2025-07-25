@@ -5,14 +5,15 @@ on:
 
 env:
   AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-  LOCATION: 'francecentral' 
-  SHORT_LOCATION: 'frc'
-  RESOURCE_GROUP_NAME: 'RD-infraIT-${{ env.SHORT_LOCATION }}-rg'
+  LOCATION: 'francecentral'
   SUBSCRIPTION_ID: 'Az-Subscription1-Mandar'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      SHORT_LOCATION: 'frc'
+      RESOURCE_GROUP_NAME: 'RD-infraIT-${{ env.SHORT_LOCATION }}-rg'
     steps:
       - name: Checkout repository   # Checkout your code
         uses: actions/checkout@v3
