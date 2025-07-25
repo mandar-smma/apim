@@ -11,5 +11,8 @@ env:
   SUBSCRIPTION_ID: 'Az-Subscription1-Mandar'
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository   # Checkout your code
+        uses: actions/checkout@v3
