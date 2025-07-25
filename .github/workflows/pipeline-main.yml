@@ -21,12 +21,15 @@ jobs:
       - name: Install Azure PowerShell # 🛠️ Install Azure PowerShell
         run: |
           pwsh -Command "Install-Module -Name Az -Force -Scope CurrentUser -AllowClobber"
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy
         uses: azure/powershell@v1
         with:
           inlineScript: | 
-            Write-Host "Logging in to Azure..."
-            Connect-AzAccount -Identity
+            # "Start deploy to Azure"
             $resourceGroupName = 'PO-Apim-${{ env.SHORT_LOCATION }}-rg'
 
             Write-Host "Setting subscription context..."
