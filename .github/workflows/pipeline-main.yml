@@ -36,3 +36,4 @@ jobs:
             if (-not (Get-AzResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue)) {
               New-AzResourceGroup -Name $resourceGroupName -Location ${{ env.LOCATION }}
             }
+          azPSVersion: "latest"
