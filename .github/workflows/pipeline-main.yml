@@ -31,13 +31,13 @@ jobs:
           inlineScript: |
             # Authenticate to Azure
             Write-Host "Authenticating with Azure..."
-            $creds = $env:AZURE_CREDENTIALS | ConvertFrom-Json
-            Connect-AzAccount `
-            -ServicePrincipal `
-            -Tenant $creds.tenantId `
-            -ApplicationId $creds.clientId `
-            -Credential (New-Object System.Management.Automation.PSCredential($creds.clientId, (ConvertTo-SecureString $creds.clientSecret -AsPlainText -Force))) `
-            -Subscription $creds.subscriptionId 
+            $creds = $env:AZURE_CREDENTIALS | ConvertFrom-Json			
+            $tenantId = $creds.tenantId 
+            $appId =  $creds.clientId  # Also known as Client ID
+            $secret = $creds.clientSecret
+            $credential = New-Object System.Management.Automation.PSCredential ($appId, $secret)
+            
+            Connect-AzAccount -ServicePrincipal -Tenant $tenantId -Credential $credential
 
             # "Start deploy to Azure"
              Write-Host " Deploy to Azure..."
