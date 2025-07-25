@@ -1,7 +1,7 @@
 name: Deploy Azure Resources with PowerShell
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
 env:
   AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
