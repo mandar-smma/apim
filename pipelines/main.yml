@@ -1,53 +1,53 @@
-variables:
- # Location where resources, including resource group, will be deployed
-  - name: "location"
-    value: "francecentral"
-  - name: "shortLocation"
-    value: "frc"
+# variables:
+#  # Location where resources, including resource group, will be deployed
+#   - name: "location"
+#     value: "francecentral"
+#   - name: "shortLocation"
+#     value: "frc"
   
-  - name: 'resourceGroupName'
-    value: "RD-infraIT-${{variables.shortLocation}}-rg"
+#   - name: 'resourceGroupName'
+#     value: "RD-infraIT-${{variables.shortLocation}}-rg"
 
-  # Branch used by this pipeline run
-  - name: GitBranch
-    value: $(Build.SourceBranchName)
-  - name: environmentName
-    value: "dev"
-  - name: ServiceConnectionAppId
-    value: "9599a915-4c7e-41a6-a01a-20607495f3b5"
+#   # Branch used by this pipeline run
+#   - name: GitBranch
+#     value: $(Build.SourceBranchName)
+#   - name: environmentName
+#     value: "dev"
+#   - name: ServiceConnectionAppId
+#     value: "9599a915-4c7e-41a6-a01a-20607495f3b5"
 
-pool:
-  vmImage: ubuntu-latest
+# pool:
+#   vmImage: ubuntu-latest
 
-stages:
-  # Deploy Azure ARM resources
-  - stage: AzureARMDeployment
-    displayName: "Deploy Azure resources to resource group"
-    jobs:
-      - deployment: DeployAzureARM
-        displayName: "Deploy ARM resources to resource group"
-        environment: ${{variables.environmentName}}
-        strategy:
-          # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/deployment-jobs?view=azure-devops#runonce-deployment-strategy
-          runOnce:
-            deploy:
-              steps:
+# stages:
+#   # Deploy Azure ARM resources
+#   - stage: AzureARMDeployment
+#     displayName: "Deploy Azure resources to resource group"
+#     jobs:
+#       - deployment: DeployAzureARM
+#         displayName: "Deploy ARM resources to resource group"
+#         environment: ${{variables.environmentName}}
+#         strategy:
+#           # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/deployment-jobs?view=azure-devops#runonce-deployment-strategy
+#           runOnce:
+#             deploy:
+#               steps:
 
-              # Checkout code from repository
-              - checkout: self
+#               # Checkout code from repository
+#               - checkout: self
 
-              # Create APIM service
-              - task: AzureResourceManagerTemplateDeployment@3
-                displayName: "Apply ARM template to ${{variables.resourceGroupName}}"
-                inputs:
-                  deploymentScope: "Resource Group"
-                  azureResourceManagerConnection: ${{variables.azureResourceManagerConnectionName}}
-                  subscriptionId: "${{variables.subscriptionId}}"
-                  resourceGroupName: "${{variables.resourceGroupName}}"
-                  location: "${{variables.location}}"
-                  templateLocation: "Linked artifact"
-                  csmFile: "infra/azure-deploy.bicep"
-                  csmParametersFile: "infra/parameters-env-${{variables.environmentName}}.bicepparam"
-                  overrideParameters: "-environmentName $(environmentName) \
-                                       -deploymentLocation \"${{variables.location}}\" \
-                                       -azureResourceManagerServiceConnectionAppId \"${{variables.ServiceConnectionAppId}}\""
+#               # Create APIM service
+#               - task: AzureResourceManagerTemplateDeployment@3
+#                 displayName: "Apply ARM template to ${{variables.resourceGroupName}}"
+#                 inputs:
+#                   deploymentScope: "Resource Group"
+#                   azureResourceManagerConnection: ${{variables.azureResourceManagerConnectionName}}
+#                   subscriptionId: "${{variables.subscriptionId}}"
+#                   resourceGroupName: "${{variables.resourceGroupName}}"
+#                   location: "${{variables.location}}"
+#                   templateLocation: "Linked artifact"
+#                   csmFile: "infra/azure-deploy.bicep"
+#                   csmParametersFile: "infra/parameters-env-${{variables.environmentName}}.bicepparam"
+#                   overrideParameters: "-environmentName $(environmentName) \
+#                                        -deploymentLocation \"${{variables.location}}\" \
+#                                        -azureResourceManagerServiceConnectionAppId \"${{variables.ServiceConnectionAppId}}\""

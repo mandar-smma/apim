@@ -1,10 +1,10 @@
 // Parameters expected from YAML Pipeline
+// @description('Deployment location for resources in this deployment')
+// param environmentName string // ex: dev or prod
 @description('Deployment location for resources in this deployment')
-param environmentName string // ex: dev or prod
-@description('Deployment location for resources in this deployment')
-param deploymentLocation string // ex: westeurope
-@description('App ID of the principal ID of the service connection from Azure DevOps')
-param azureResourceManagerServiceConnectionAppId string
+param deploymentLocation string // ex: francecentral
+// @description('App ID of the principal ID of the service connection from Azure DevOps')
+// param azureResourceManagerServiceConnectionAppId string
 
 
 // Key vault
@@ -23,7 +23,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       name: 'standard'
       family: 'A'
     }
-    softDeleteRetentionInDays: 14
+    softDeleteRetentionInDays: 3
     tenantId: subscription().tenantId
   }
 }
