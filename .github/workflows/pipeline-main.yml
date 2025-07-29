@@ -26,6 +26,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy
+        id: deploy_rg
         uses: azure/powershell@v1
         with:
           inlineScript: |
@@ -46,4 +47,13 @@ jobs:
             if (-not (Get-AzResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue)) {
               New-AzResourceGroup -Name $resourceGroupName -Location ${{ env.LOCATION }}
             }
+            echo "resourceGroupName=$resourceGroupName" >> $env:GITHUB_OUTPUT
           azPSVersion: "latest"
+      - name: Deploy Bicep Template
+        id: deploy_bicep
+        uses: azure/arm-deploy@v1
+        with:
+            resourceGroupName: ${{ steps.deploy_rg.outputs.resourceGroupName }}
+            bicepFile: ../../infra/azure-deploy.bicep
+            parameters: |
+              deploymentLocation=${{ env.LOCATION }}
