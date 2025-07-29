@@ -35,11 +35,6 @@ jobs:
             $tenantId = $creds.tenantId 
             $appId =  $creds.clientId  # Also known as Client ID
 
-            $secret = $creds.clientSecret
-            $secureSecret = ConvertTo-SecureString $secret -AsPlainText -Force
-            $credential = New-Object System.Management.Automation.PSCredential ($appId, $secureSecret)
-            Connect-AzAccount -ServicePrincipal -Tenant $tenantId -Credential $credential
-
             # "Start deploy to Azure"
              Write-Host " Deploy to Azure..."
             $resourceGroupName = 'PO-Apim-${{ env.SHORT_LOCATION }}-rg'
