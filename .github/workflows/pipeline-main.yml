@@ -47,7 +47,7 @@ jobs:
 
             Write-Host "Connected to Azure as Service Principal: $appId"
             Write-Host "Using subscription ID: $($creds.subscriptionId)"
-            
+
             Write-Host "Setting subscription context..."
             Set-AzContext -SubscriptionId $creds.subscriptionId
 
@@ -62,6 +62,6 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
             resourceGroupName: ${{ steps.deploy_rg.outputs.resourceGroupName }}
-            bicepFile: ../../infra/azure-deploy.bicep
+            template-file: ../../infra/azure-deploy.bicep
             parameters: |
               deploymentLocation=${{ env.LOCATION }}
