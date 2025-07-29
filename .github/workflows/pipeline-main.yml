@@ -62,6 +62,7 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
             resourceGroupName: ${{ steps.deploy_rg.outputs.resourceGroupName }}
-            template-file: ../../infra/azure-deploy.bicep
+            template: ../../infra/azure-deploy.bicep
             parameters: |
               deploymentLocation=${{ env.LOCATION }}
+            deployment-mode: Incremental
