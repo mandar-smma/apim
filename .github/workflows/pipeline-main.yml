@@ -58,6 +58,8 @@ jobs:
             }
             echo "resourceGroupName=$resourceGroupName" >> $env:GITHUB_OUTPUT
           azPSVersion: "latest"
+      - name: Use MY_VAR
+        run: echo " Deployment variables are email ${{ env.PUBLISHER_EMAIL }} , name ${{ env.PUBLISHER_NAME }} , location ${{ env.LOCATION }}"
       - name: Deploy Bicep Template
         id: deploy_bicep
         uses: azure/arm-deploy@v1
