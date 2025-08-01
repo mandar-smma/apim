@@ -73,3 +73,16 @@ resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01
     minimumTlsVersion: 'TLS1_2'
   }
 }
+
+// File share in storage account used for function app
+resource functionAppFileService 'Microsoft.Storage/storageAccounts/fileServices@2022-09-01' = {
+  name: 'default'
+  parent: functionAppStorageAccount
+}
+resource functionAppFileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2022-09-01' = {
+  parent: functionAppFileService
+  name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}fs'
+  properties: {
+    accessTier: 'Hot'
+  }
+}
