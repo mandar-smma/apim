@@ -93,7 +93,7 @@ resource functionAppHostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   location: deploymentLocation
   kind: 'linux'
   properties: {
-    zoneRedundant: true
+    zoneRedundant: false
     reserved: true
   }
   sku: {
