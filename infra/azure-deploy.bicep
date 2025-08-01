@@ -5,7 +5,7 @@
 param deploymentLocation string // ex: westeurope
 // @description('App ID of the principal ID of the service connection from Azure DevOps')
 // param azureResourceManagerServiceConnectionAppId string
-param allowedOrigins array = []
+//param allowedOrigins array = []
 
 // Key vault
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
