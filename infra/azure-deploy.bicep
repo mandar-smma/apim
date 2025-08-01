@@ -86,3 +86,18 @@ resource functionAppFileShare 'Microsoft.Storage/storageAccounts/fileServices/sh
     accessTier: 'Hot'
   }
 }
+
+// Hosting Plan
+resource functionAppHostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
+  name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}hpl'
+  location: deploymentLocation
+  kind: 'linux'
+  properties: {
+    zoneRedundant: true
+    reserved: true
+  }
+  sku: {
+    name: 'Y1'
+    tier: 'Dynamic'
+  }
+}
