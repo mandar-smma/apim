@@ -5,7 +5,7 @@
 param deploymentLocation string // ex: westeurope
 // @description('App ID of the principal ID of the service connection from Azure DevOps')
 // param azureResourceManagerServiceConnectionAppId string
-//param allowedOrigins array = []
+param allowedOrigins array = []
 
 // Key vault
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
@@ -101,3 +101,136 @@ resource functionAppHostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
     tier: 'Dynamic'
   }
 }
+
+
+// Application Insight
+resource functionAppApplicationInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}ain'
+  location: deploymentLocation
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    Request_Source: 'rest'
+  }
+}
+
+
+// Function app
+var functionAppName = '${uniqueString(subscription().subscriptionId, resourceGroup().id)}fun'
+resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
+  name: functionAppName
+  location: deploymentLocation
+  kind: 'functionapp,linux'
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    enabled: true
+    hostNameSslStates: [
+      {
+        name: '${functionAppName}.azurewebsites.net'
+        sslState: 'Disabled'
+        hostType: 'Standard'
+      }
+      {
+        name: '${functionAppName}.scm.azurewebsites.net'
+        sslState: 'Disabled'
+        hostType: 'Repository'
+      }
+    ]
+    
+    serverFarmId: functionAppHostingPlan.id
+    reserved: true
+    vnetRouteAllEnabled: true
+    vnetImagePullEnabled: false
+    vnetContentShareEnabled: false
+    siteConfig: {
+      linuxFxVersion: 'Python|3.12'
+      acrUseManagedIdentityCreds: false
+      alwaysOn: false
+      http20Enabled: false
+      functionAppScaleLimit: 0
+      appSettings: [
+       
+        {
+          name: 'WEBSITE_CONTENTOVERVNET'
+          value: '1'
+        }
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};AccountKey=${functionAppStorageAccount.listKeys().keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};AccountKey=${functionAppStorageAccount.listKeys().keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: functionAppFileShare.name
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: functionAppApplicationInsights.properties.InstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: functionAppApplicationInsights.properties.ConnectionString
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'python'
+        }
+        {
+          name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
+          value: 'true'
+        }
+      ]
+      ftpsState: 'FtpsOnly'
+      minTlsVersion: '1.2'
+      cors: {
+        allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
+      }
+    }
+    scmSiteAlsoStopped: false
+    clientAffinityEnabled: false
+    //clientCertEnabled: false
+    //clientCertMode: 'Required'
+    hostNamesDisabled: false
+    containerSize: 1536
+    dailyMemoryTimeQuota: 0
+    httpsOnly: true
+    redundancyMode: 'None'
+    publicNetworkAccess: 'Enabled'
+    //storageAccountRequired: false
+    keyVaultReferenceIdentity: 'SystemAssigned'
+  }
+}
+
+// Dot no allow FTP as deployment should not be done that way
+resource functionAppCredentialPolicyFtp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
+  parent: functionApp
+  name: 'ftp'
+  #disable-next-line BCP187
+  location: deploymentLocation
+  properties: {
+    allow: false
+  }
+}
+
+// Do not allow SCM as this should not be exposed in production
+resource functionAppCredentialPolicyScm 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
+  parent: functionApp
+  name: 'scm'
+  #disable-next-line BCP187
+  location: deploymentLocation
+  properties: {
+    allow: false
+  }
+}
+
+// Output function app name
+output functionAppName string = functionApp.name
