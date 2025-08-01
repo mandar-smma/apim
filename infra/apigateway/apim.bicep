@@ -7,9 +7,10 @@ param publisherEmail string
 param publisherName string
 @description('apim name')
 param name string
+@description('app insights Key for apim')
+param functionAppApplicationInsightsKey string
 @description('app insights name for apim')
 param applicationInsightsName string
-
 
 resource apimService 'Microsoft.ApiManagement/service@2021-08-01' = {
   name: name
@@ -34,7 +35,7 @@ resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-12-01-preview'
   parent: apimService
   properties: {
     credentials: {
-      instrumentationKey: applicationInsights.properties.InstrumentationKey
+      instrumentationKey: functionAppApplicationInsightsKey
     }
     description: 'Logger to Azure Application Insights'
     isBuffered: false
