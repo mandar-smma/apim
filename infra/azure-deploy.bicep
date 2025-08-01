@@ -248,10 +248,10 @@ module apim './apigateway/apim.bicep' = {
   params: {
     name: apimName
     location: deploymentLocation
-    functionAppApplicationInsightsKey: functionAppApplicationInsightsKey
-    applicationInsightsName : functionAppApplicationInsights.name
     publisherEmail: publisherEmail
     publisherName: publisherName
+    functionAppApplicationInsightsKey: functionAppApplicationInsightsKey
+    applicationInsightsName : functionAppApplicationInsights.name
   }
 }
 
