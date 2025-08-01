@@ -119,7 +119,7 @@ resource functionAppApplicationInsights 'Microsoft.Insights/components@2020-02-0
     Request_Source: 'rest'
   }
 }
-
+var functionAppApplicationInsightsName = functionAppApplicationInsights.name
 
 // Function app
 var functionAppName = '${uniqueString(subscription().subscriptionId, resourceGroup().id)}fun'
@@ -248,7 +248,7 @@ module apim './apigateway/apim.bicep' = {
   params: {
     name: apimName
     location: deploymentLocation
-    applicationInsightsName: functionAppApplicationInsights.properties.Name
+    applicationInsightsName: functionAppApplicationInsightsName
     publisherEmail: publisherEmail
     publisherName: publisherName
   }
