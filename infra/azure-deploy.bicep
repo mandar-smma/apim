@@ -27,3 +27,49 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
     tenantId: subscription().tenantId
   }
 }
+
+resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+  name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}stg'
+  location: deploymentLocation
+  tags: { RESSOURCE_PURPOSE: 'Storage' }
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    accessTier: 'Hot'
+    allowedCopyScope: 'AAD'
+    allowBlobPublicAccess: false
+    allowCrossTenantReplication: false
+    allowSharedKeyAccess: true
+    defaultToOAuthAuthentication: false
+    dnsEndpointType: 'Standard'
+    encryption: {
+      services: {
+        file: {
+          keyType: 'Account'
+          enabled: true
+        }
+        blob: {
+          keyType: 'Account'
+          enabled: true
+        }
+      }
+      keySource: 'Microsoft.Storage'
+    }
+    isHnsEnabled: true
+    isLocalUserEnabled: true
+    networkAcls: {
+      bypass: 'AzureServices'
+      virtualNetworkRules: []
+      ipRules: []
+      defaultAction: 'Allow'
+    }
+    publicNetworkAccess: 'Enabled'
+    supportsHttpsTrafficOnly: true
+    minimumTlsVersion: 'TLS1_2'
+  }
+}
