@@ -148,7 +148,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
     vnetImagePullEnabled: false
     vnetContentShareEnabled: false
     siteConfig: {
-      linuxFxVersion: 'Python|3.12'
+      linuxFxVersion: 'Python|3.10'
       acrUseManagedIdentityCreds: false
       alwaysOn: false
       http20Enabled: false
