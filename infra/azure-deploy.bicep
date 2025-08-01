@@ -7,6 +7,11 @@ param deploymentLocation string // ex: westeurope
 // param azureResourceManagerServiceConnectionAppId string
 param allowedOrigins array = []
 
+@description('Apim publisher email')
+param publisherEmail string
+@description('Apim publisher name')
+param publisherName string
+
 // Key vault
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}kv'
@@ -91,6 +96,7 @@ resource functionAppFileShare 'Microsoft.Storage/storageAccounts/fileServices/sh
 resource functionAppHostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}hpl'
   location: deploymentLocation
+  tags: { RESSOURCE_PURPOSE: 'hosting' }
   kind: 'linux'
   properties: {
     zoneRedundant: false
@@ -121,6 +127,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: functionAppName
   location: deploymentLocation
   kind: 'functionapp,linux'
+  tags: { RESSOURCE_PURPOSE: 'api' }
   identity: {
     type: 'SystemAssigned'
   }
@@ -209,6 +216,8 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
     keyVaultReferenceIdentity: 'SystemAssigned'
   }
 }
+// Output function app name
+output functionAppName string = functionApp.name
 
 // Dot no allow FTP as deployment should not be done that way
 resource functionAppCredentialPolicyFtp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
@@ -232,5 +241,16 @@ resource functionAppCredentialPolicyScm 'Microsoft.Web/sites/basicPublishingCred
   }
 }
 
-// Output function app name
-output functionAppName string = functionApp.name
+// APIM app
+var apimName = '${uniqueString(subscription().subscriptionId, resourceGroup().id)}apim'
+module apim './apigateway/apim.bicep' = {
+  name: 'apimDeployment'
+  params: {
+    name: apimName
+    location: deploymentLocation
+    applicationInsightsName: functionAppApplicationInsights.properties.Name
+    publisherEmail: publisherEmail
+    publisherName: publisherName
+  }
+}
+

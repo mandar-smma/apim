@@ -8,6 +8,8 @@ env:
   LOCATION: 'westeurope' 
   SHORT_LOCATION: 'weu'
   SUBSCRIPTION_ID: 'b2fe2be6-a721-41e9-a5c3-6b45a3765f76'
+  PUBLISHER_EMAIL: 'mandhar30@gmail.com'
+  PUBLISHER_NAME: 'Mandar'
   BICEP_FILE: './infra/main.bicep'
 
 jobs:
