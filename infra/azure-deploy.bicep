@@ -8,9 +8,9 @@ param deploymentLocation string // ex: westeurope
 param allowedOrigins array = []
 
 @description('Apim publisher email')
-param publisherEmail string
+param publisherEmail string = 'mandhar30@gmail.com'
 @description('Apim publisher name')
-param publisherName string
+param publisherName string = 'Mandar'
 
 // Key vault
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
