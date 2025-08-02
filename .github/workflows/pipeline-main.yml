@@ -56,12 +56,13 @@ jobs:
             }
             echo "resourceGroupName=$resourceGroupName" >> $env:GITHUB_OUTPUT
           azPSVersion: "latest"
+      - name: Debug env vars
+        run: |
+          echo "publisherEmail=${{ env.PUBLISHER_EMAIL }}"
+          echo "publisherName=${{ env.PUBLISHER_NAME }}"
       - name: Deploy Bicep Template
         id: deploy_bicep
         uses: azure/arm-deploy@v1
-        env:
-          PUBLISHER_EMAIL: 'mandhar30@gmail.com'
-          PUBLISHER_NAME: 'Mandar'
         with:
             resourceGroupName: ${{ steps.deploy_rg.outputs.resourceGroupName }}
             template: ./infra/azure-deploy.bicep
