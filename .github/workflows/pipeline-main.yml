@@ -8,8 +8,6 @@ env:
   LOCATION: 'westeurope' 
   SHORT_LOCATION: 'weu'
   SUBSCRIPTION_ID: 'b2fe2be6-a721-41e9-a5c3-6b45a3765f76'
-  PUBLISHER_EMAIL: 'mandhar30@gmail.com'
-  PUBLISHER_NAME: 'Mandar'
 
 
 jobs:
@@ -59,10 +57,6 @@ jobs:
             }
             echo "resourceGroupName=$resourceGroupName" >> $env:GITHUB_OUTPUT
           azPSVersion: "latest"
-      - name: Debug env vars
-        run: |
-          echo "publisherEmail=${{ env.PUBLISHER_EMAIL }}"
-          echo "publisherName=${{ env.PUBLISHER_NAME }}"
       - name: Deploy Bicep Template
         id: deploy_bicep
         uses: azure/arm-deploy@v1
@@ -71,6 +65,4 @@ jobs:
             template: ./infra/azure-deploy.bicep
             parameters: |
               deploymentLocation=${{ env.LOCATION }}
-              publisherEmail=${{ env.PUBLISHER_EMAIL }}
-              publisherName=${{ env.PUBLISHER_NAME }}
             deployment-mode: Incremental
