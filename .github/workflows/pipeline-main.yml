@@ -8,8 +8,6 @@ env:
   LOCATION: 'westeurope' 
   SHORT_LOCATION: 'weu'
   SUBSCRIPTION_ID: 'b2fe2be6-a721-41e9-a5c3-6b45a3765f76'
-  PUBLISHER_EMAIL: 'mandhar30@gmail.com'
-  PUBLISHER_NAME: 'Mandar'
 
 jobs:
   deploy:
@@ -58,16 +56,17 @@ jobs:
             }
             echo "resourceGroupName=$resourceGroupName" >> $env:GITHUB_OUTPUT
           azPSVersion: "latest"
-      - name: Use MY_VAR
-        run: echo " Deployment variables are email ${{ env.PUBLISHER_EMAIL }} , name ${{ env.PUBLISHER_NAME }} , location ${{ env.LOCATION }}"
       - name: Deploy Bicep Template
         id: deploy_bicep
         uses: azure/arm-deploy@v1
+        env:
+          PUBLISHER_EMAIL: 'mandhar30@gmail.com'
+          PUBLISHER_NAME: 'Mandar'
         with:
             resourceGroupName: ${{ steps.deploy_rg.outputs.resourceGroupName }}
             template: ./infra/azure-deploy.bicep
             parameters: |
               deploymentLocation=${{ env.LOCATION }}
-              publisherEmail= 'mandhar30@gmail.com'
-              publisherName= 'Mandar'
+              publisherEmail=${{ env.PUBLISHER_EMAIL }}
+              publisherName=${{ env.PUBLISHER_NAME }}
             deployment-mode: Incremental
