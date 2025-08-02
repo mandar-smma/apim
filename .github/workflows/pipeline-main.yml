@@ -68,6 +68,6 @@ jobs:
             template: ./infra/azure-deploy.bicep
             parameters: |
               deploymentLocation=${{ env.LOCATION }}
-              publisherEmail=${{ env.PUBLISHER_EMAIL }}
-              publisherName=${{ env.PUBLISHER_NAME }}
+              publisherEmail= 'mandhar30@gmail.com'
+              publisherName= 'Mandar'
             deployment-mode: Incremental
