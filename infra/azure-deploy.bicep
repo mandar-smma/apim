@@ -12,6 +12,9 @@ param publisherEmail string = 'mandhar30@gmail.com'
 @description('Apim publisher name')
 param publisherName string = 'Mandar'
 
+@description('resource group for the deployment')
+param resourceGroupName string
+
 // Key vault
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}kv'
@@ -105,6 +108,15 @@ resource functionAppHostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   sku: {
     name: 'Y1'
     tier: 'Dynamic'
+  }
+}
+
+// Monitor application with Azure Monitor
+module monitoring './apigateway/monitoring.bicep' = {
+  name: 'monitoring'
+  params: {
+    resourceGroupName: resourceGroupName
+    storageAccountName: functionAppStorageAccount.name
   }
 }
 
