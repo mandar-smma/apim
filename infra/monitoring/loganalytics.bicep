@@ -1,4 +1,4 @@
-param location string = resourceGroup().location
+param location string
 param tags object = {}
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {

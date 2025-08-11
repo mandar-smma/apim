@@ -115,6 +115,7 @@ module monitoring './monitoring/monitoring.bicep' = {
   name: 'monitoring'
   params: {
     location: deploymentLocation
+    tags: union(pTags, { RESSOURCE_PURPOSE: 'Logs' }) 
   }
 }
 
