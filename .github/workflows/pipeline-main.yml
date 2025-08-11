@@ -65,5 +65,4 @@ jobs:
             template: ./infra/azure-deploy.bicep
             parameters: |
               deploymentLocation=${{ env.LOCATION }}
-              resourceGroupName=${{ steps.deploy_rg.outputs.resourceGroupName }}
-            deployment-mode: Incremental
+            deploymentMode: Incremental
