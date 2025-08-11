@@ -1,0 +1,28 @@
+// monitoring.bicep
+param location string
+param tags object = {}
+
+module logAnalytics 'loganalytics.bicep' = {
+  name: 'loganalytics'
+  params: {
+    location: location
+    tags: tags
+  }
+}
+
+module applicationInsights 'applicationinsights.bicep' = {
+  name: 'applicationinsights'
+  params: {
+    name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}-appInsights'
+    location: location
+    tags: tags
+    dashboardName: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}-dashboard'
+    logAnalyticsWorkspaceId: logAnalytics.outputs.id
+  }
+}
+
+output applicationInsightsConnectionString string = applicationInsights.outputs.connectionString
+output applicationInsightsInstrumentationKey string = applicationInsights.outputs.instrumentationKey
+output applicationInsightsName string = applicationInsights.outputs.name
+output logAnalyticsWorkspaceId string = logAnalytics.outputs.id
+output logAnalyticsWorkspaceName string = logAnalytics.outputs.name
