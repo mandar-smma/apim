@@ -16,7 +16,6 @@ module applicationInsights 'applicationinsights.bicep' = {
     name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}-appInsights'
     location: location
     tags: tags
-    dashboardName: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}-dashboard'
     logAnalyticsWorkspaceId: logAnalytics.outputs.id
   }
 }
