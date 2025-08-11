@@ -242,6 +242,15 @@ resource functionAppCredentialPolicyScm 'Microsoft.Web/sites/basicPublishingCred
   }
 }
 
+module diagnostics './monitoring/app-diagnostics.bicep' = {
+  name: 'function-diagnostics'
+  params: {
+    appName: functionAppName
+    kind: 'functionapp'
+    diagnosticWorkspaceId: monitoring.outputs.logAnalyticsWorkspaceId
+  }
+}
+
 // APIM app
 var apimName = '${uniqueString(subscription().subscriptionId, resourceGroup().id)}apim'
 module apim './apigateway/apim.bicep' = {
