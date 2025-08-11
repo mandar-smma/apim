@@ -11,12 +11,11 @@ param name string
 param functionAppApplicationInsightsKey string
 @description('app insights name for apim')
 param applicationInsightsName string
-param pTags object = {}
 
 resource apimService 'Microsoft.ApiManagement/service@2021-08-01' = {
   name: name
   location: location
-  tags: union(pTags, { RESSOURCE_PURPOSE: 'APIM' })
+  tags: { RESSOURCE_PURPOSE: 'APIM' }
   sku: {
     name: 'Consumption'
     capacity: 0

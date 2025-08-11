@@ -12,13 +12,13 @@ param publisherEmail string = 'mandhar30@gmail.com'
 @description('Apim publisher name')
 param publisherName string = 'Mandar'
 
-var pTags = { 'azd-env-name': 'dev' }
+//var pTags = { 'azd-env-name': 'dev' }
 
 // Key vault
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}kv'
   location: deploymentLocation
-  tags: union(pTags, { RESSOURCE_PURPOSE: 'Security' })
+  tags: { RESSOURCE_PURPOSE: 'Security' }
   properties: {
     enabledForDeployment: false
     enabledForDiskEncryption: false
@@ -38,7 +38,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
 resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}stg'
   location: deploymentLocation
-  tags: union(pTags, { RESSOURCE_PURPOSE: 'Storage' })
+  tags: { RESSOURCE_PURPOSE: 'Storage' }
   sku: {
     name: 'Standard_LRS'
   }
@@ -98,7 +98,7 @@ resource functionAppFileShare 'Microsoft.Storage/storageAccounts/fileServices/sh
 resource functionAppHostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: '${uniqueString(subscription().subscriptionId, resourceGroup().id)}hpl'
   location: deploymentLocation
-  tags: union(pTags, { RESSOURCE_PURPOSE: 'hosting' })
+  tags: { RESSOURCE_PURPOSE: 'hosting' }
   kind: 'linux'
   properties: {
     zoneRedundant: false
@@ -115,7 +115,7 @@ module monitoring './monitoring/monitoring.bicep' = {
   name: 'monitoring'
   params: {
     location: deploymentLocation
-    tags: union(pTags, { RESSOURCE_PURPOSE: 'Logs' }) 
+    tags: { RESSOURCE_PURPOSE: 'Logs' }
   }
 }
 
@@ -129,7 +129,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: functionAppName
   location: deploymentLocation
   kind: 'functionapp,linux'
-  tags: union(pTags, { RESSOURCE_PURPOSE: 'api' })
+  tags: { RESSOURCE_PURPOSE: 'api' }
   identity: {
     type: 'SystemAssigned'
   }
